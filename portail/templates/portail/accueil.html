@@ -1,0 +1,455 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Espace — IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); }
+        .sidebar {
+            background: white;
+            min-height: 100vh;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.08);
+            padding-top: 20px;
+        }
+        .sidebar .nav-link {
+            color: #444; padding: 12px 20px;
+            border-radius: 10px; margin: 3px 10px;
+            font-weight: 500; transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: linear-gradient(135deg, #1a3a6b, #2d5aa0);
+            color: white;
+        }
+        .sidebar .nav-link i { width: 20px; }
+        .card-info {
+            border: none; border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .card-info .card-header {
+            background: linear-gradient(135deg, #1a3a6b, #2d5aa0);
+            color: white; border-radius: 15px 15px 0 0 !important;
+            font-weight: 600; padding: 15px 20px;
+        }
+        .stat-box {
+            border-radius: 12px; padding: 20px;
+            text-align: center; border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .note-badge {
+            font-size: 1.1rem; font-weight: 700;
+            padding: 5px 12px; border-radius: 8px;
+        }
+        .note-ok { background: #d4edda; color: #155724; }
+        .note-fail { background: #f8d7da; color: #721c24; }
+        .section-title {
+            color: #1a3a6b; font-weight: 700;
+            border-left: 4px solid #e07b00;
+            padding-left: 12px; margin-bottom: 20px;
+        }
+        .etudiant-avatar {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #1a3a6b, #2d5aa0);
+            border-radius: 50%; display: flex;
+            align-items: center; justify-content: center;
+            color: white; font-size: 1.5rem; font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-dark px-4 py-2">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'images/logo_iuheg.png' %}" height="40"
+                 class="rounded-circle border border-white border-2" alt="Logo">
+            <span class="navbar-brand mb-0 fw-bold">IUHEG — Portail Étudiant</span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-white-50 small">
+                <i class="fas fa-user me-1"></i>{{ etudiant.nom }} {{ etudiant.prenom }}
+            </span>
+            <a href="{% url 'portail_logout' %}" class="btn btn-sm btn-outline-light">
+                <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
+            </a>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- SIDEBAR -->
+            <div class="col-md-2 sidebar">
+                <p class="text-muted small fw-bold px-3 mt-2">MON ESPACE</p>
+                <nav class="nav flex-column">
+                    <a href="#profil" class="nav-link active">
+                        <i class="fas fa-user me-2"></i>Mon Profil
+                    </a>
+                    <a href="#notes" class="nav-link">
+                        <i class="fas fa-clipboard-list me-2"></i>Mes Notes
+                    </a>
+                    <a href="#paiements" class="nav-link">
+                        <i class="fas fa-money-bill me-2"></i>Mes Paiements
+                    </a>
+                    <a href="#documents" class="nav-link">
+                        <i class="fas fa-folder me-2"></i>Mes Documents
+                    </a>
+                    <a href="#deliberation" class="nav-link">
+                        <i class="fas fa-graduation-cap me-2"></i>Délibération
+                    </a>
+                </nav>
+            </div>
+
+            <!-- CONTENU -->
+            <div class="col-md-10 py-4 px-4">
+
+                <!-- STATS RAPIDES -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-box bg-white">
+                            <i class="fas fa-id-card fa-2x text-primary mb-2"></i>
+                            <p class="small text-muted mb-1">Matricule</p>
+                            <h6 class="fw-bold text-dark">{{ etudiant.matricule }}</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box bg-white">
+                            <i class="fas fa-book fa-2x text-success mb-2"></i>
+                            <p class="small text-muted mb-1">Filière</p>
+                            <h6 class="fw-bold text-dark">{{ etudiant.filiere }}</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box bg-white">
+                            <i class="fas fa-layer-group fa-2x text-warning mb-2"></i>
+                            <p class="small text-muted mb-1">Niveau</p>
+                            <h6 class="fw-bold text-dark">{{ etudiant.niveau }}</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box bg-white">
+                            <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                            <p class="small text-muted mb-1">Moyenne Générale</p>
+                            <h6 class="fw-bold text-dark">
+                                {% if moyenne_generale %}
+                                    {{ moyenne_generale|floatformat:2 }}/20
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROFIL -->
+                <div id="profil" class="card card-info mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-user me-2"></i>Mon Profil
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="etudiant-avatar">
+                                {{ etudiant.nom|first }}{{ etudiant.prenom|first }}
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-0">{{ etudiant.nom }} {{ etudiant.prenom }}</h5>
+                                <span class="badge bg-success">{{ etudiant.get_statut_display }}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Email :</strong> {{ etudiant.email }}</p>
+                                <p><strong>Téléphone :</strong> {{ etudiant.telephone }}</p>
+                                <p><strong>Date de naissance :</strong> {{ etudiant.date_naissance }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Nationalité :</strong> {{ etudiant.nationalite }}</p>
+                                <p><strong>Adresse :</strong> {{ etudiant.adresse }}</p>
+                                <p><strong>Année académique :</strong> {{ etudiant.annee_academique }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NOTES -->
+                <div id="notes" class="card card-info mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-clipboard-list me-2"></i>Mes Notes
+                    </div>
+                    <div class="card-body">
+                        {% if notes %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Cours</th>
+                                        <th>Code</th>
+                                        <th>Note CC</th>
+                                        <th>Note Examen</th>
+                                        <th>Note Finale</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for note in notes %}
+                                    <tr>
+                                        <td>{{ note.cours.nom }}</td>
+                                        <td><span class="badge bg-secondary">{{ note.cours.code }}</span></td>
+                                        <td>{{ note.note_cc|default:"—" }}</td>
+                                        <td>{{ note.note_examen|default:"—" }}</td>
+                                        <td>
+                                            {% if note.note_finale %}
+                                            <span class="note-badge {% if note.note_finale >= 10 %}note-ok{% else %}note-fail{% endif %}">
+                                                {{ note.note_finale|floatformat:2 }}/20
+                                            </span>
+                                            {% else %}—{% endif %}
+                                        </td>
+                                        <td>
+                                            {% if note.note_finale %}
+                                                {% if note.note_finale >= 10 %}
+                                                <span class="badge bg-success">✅ Validé</span>
+                                                {% else %}
+                                                <span class="badge bg-danger">❌ Dette</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center py-3">
+                            <i class="fas fa-inbox fa-2x d-block mb-2"></i>
+                            Aucune note disponible pour le moment.
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- PAIEMENTS -->
+                <div id="paiements" class="card card-info mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-money-bill me-2"></i>Mes Paiements
+                    </div>
+                    <div class="card-body">
+                        {% if paiements %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Référence</th>
+                                        <th>Tranche</th>
+                                        <th>Montant Total</th>
+                                        <th>Montant Payé</th>
+                                        <th>Reste</th>
+                                        <th>Statut</th>
+                                        <th>Reçu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in paiements %}
+                                    <tr>
+                                        <td>{{ p.reference }}</td>
+                                        <td>{{ p.get_tranche_display }}</td>
+                                        <td>{{ p.montant_total|floatformat:0 }} GNF</td>
+                                        <td class="text-success fw-bold">{{ p.montant_paye|floatformat:0 }} GNF</td>
+                                        <td class="text-danger">{{ p.reste_a_payer|floatformat:0 }} GNF</td>
+                                        <td>
+                                            {% if p.statut == 'a_jour' %}
+                                            <span class="badge bg-success">À jour</span>
+                                            {% elif p.statut == 'retard' %}
+                                            <span class="badge bg-danger">En retard</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">Soldé</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'generer_recu' p.id %}"
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-download me-1"></i>PDF
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center py-3">
+                            <i class="fas fa-inbox fa-2x d-block mb-2"></i>
+                            Aucun paiement enregistré.
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- DOCUMENTS -->
+<div id="documents" class="card card-info mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-folder me-2"></i>Mes Documents</span>
+        <a href="{% url 'upload_document' %}" class="btn btn-sm btn-light">
+            <i class="fas fa-upload me-1"></i>Envoyer un document
+        </a>
+    </div>
+          <div class="card-body">
+                        {% if documents %}
+                        <div class="row g-3">
+                            {% for doc in documents %}
+                            <div class="col-md-4">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-file-alt fa-3x text-primary mb-2"></i>
+                                        <p class="fw-bold mb-1">{{ doc.nom_fichier }}</p>
+                                        <span class="badge bg-info mb-2">{{ doc.get_type_document_display }}</span><br>
+                                        {% if doc.statut == 'valide' %}
+                                        <span class="badge bg-success">✅ Validé</span>
+                                        <a href="{{ doc.fichier.url }}" class="btn btn-sm btn-outline-primary mt-2 d-block">
+                                            <i class="fas fa-download me-1"></i>Télécharger
+                                        </a>
+                                        {% elif doc.statut == 'en_attente' %}
+                                        <span class="badge bg-warning">⏳ En attente</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">❌ Rejeté</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center py-3">
+                            <i class="fas fa-folder-open fa-2x d-block mb-2"></i>
+                            Aucun document disponible.
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+<!-- DÉLIBÉRATION -->
+<div id="deliberation" class="card card-info mb-4">
+
+    <div class="card-header">
+        <i class="fas fa-graduation-cap me-2"></i>
+        Ma Délibération
+    </div>
+
+
+    <div class="card-body py-4">
+
+
+        {% if deliberations %}
+
+
+        {% for d in deliberations %}
+
+
+        <div class="text-center mb-4">
+
+
+            <i class="fas fa-graduation-cap fa-3x mb-3
+            {% if d.decision == 'admis' %}
+                text-success
+            {% elif d.decision == 'ajourne' %}
+                text-warning
+            {% else %}
+                text-danger
+            {% endif %}
+            ">
+            </i>
+
+
+            <h4 class="fw-bold">
+                {{ d.get_decision_display }}
+            </h4>
+
+
+            <p class="text-muted">
+                Année académique : {{ d.annee_academique }}
+            </p>
+
+
+            {% if d.moyenne_generale %}
+
+            <p>
+                Moyenne générale :
+                <strong>
+                    {{ d.moyenne_generale }}/20
+                </strong>
+            </p>
+
+            {% endif %}
+
+            {% if d.validee %}
+
+<div class="alert alert-success mt-3">
+
+    ✅ Délibération validée par le jury
+
+    <br>
+
+    Jury validateur :
+    <strong>
+        {{ d.jury_validateur.nom }}
+    </strong>
+
+
+    <br>
+
+    Date de validation :
+    <strong>
+        {{ d.date_validation|date:"d/m/Y à H:i" }}
+    </strong>
+
+</div>
+
+{% endif %}
+
+
+
+            {% if d.observations %}
+
+            <div class="alert alert-info">
+                {{ d.observations }}
+            </div>
+
+            {% endif %}
+
+
+        </div>
+
+
+        <hr>
+
+
+        {% endfor %}
+
+
+
+        {% else %}
+
+
+        <div class="text-center">
+
+            <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+
+
+            <p class="text-muted">
+                Délibération non encore disponible.
+            </p>
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

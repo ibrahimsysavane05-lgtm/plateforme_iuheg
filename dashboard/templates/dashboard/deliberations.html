@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Délibérations — IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); }
+        .sidebar { background-color: #1a3a6b; min-height: 100vh; padding-top: 20px; }
+        .sidebar a { color: rgba(255,255,255,0.8); text-decoration: none; padding: 12px 20px; display: block; border-radius: 10px; margin: 3px 10px; transition: all 0.3s; }
+        .sidebar a:hover { background-color: rgba(255,255,255,0.15); color: white; }
+        .sidebar .active { background-color: rgba(255,255,255,0.2); color: white; }
+        .sidebar .menu-title { color: rgba(255,255,255,0.4); font-size: 0.75rem; font-weight: 700; padding: 10px 20px; letter-spacing: 1px; }
+        .card-main { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .card-main .card-header { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border-radius: 15px 15px 0 0 !important; padding: 15px 20px; font-weight: 600; }
+        .stat-card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 20px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark px-4 py-2">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'images/logo_iuheg_original.jpg' %}" height="45" class="rounded-circle border border-white border-2">
+            <div>
+                <div class="fw-bold text-white">EduNova IUHEG — Délibérations</div>
+                <div class="text-white-50" style="font-size:0.75rem">Institut Universitaire des Hautes Études de Guinée</div>
+            </div>
+        </div>
+        <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light">
+            <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
+        </a>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar py-2">
+                <p class="menu-title">NAVIGATION</p>
+                <a href="/gestion/"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                <a href="/gestion/etudiants/"><i class="fas fa-user-graduate me-2"></i>Étudiants</a>
+                <a href="/gestion/notes/"><i class="fas fa-clipboard-list me-2"></i>Notes</a>
+                <a href="/gestion/paiements/"><i class="fas fa-money-bill me-2"></i>Paiements</a>
+                <a href="/gestion/deliberations/" class="active"><i class="fas fa-graduation-cap me-2"></i>Délibérations</a>
+                <a href="/gestion/cours/"><i class="fas fa-book me-2"></i>Cours</a>
+                <a href="/admin/documents/document/"><i class="fas fa-folder me-2"></i>Documents</a>
+                <p class="menu-title mt-3">SYSTÈME</p>
+                <a href="/admin/"><i class="fas fa-cog me-2"></i>Administration</a>
+                <a href="/portail/login/"><i class="fas fa-user me-2"></i>Portail Étudiant</a>
+            </div>
+
+            <div class="col-md-10 py-4 px-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold text-dark mb-0">
+                        <i class="fas fa-graduation-cap me-2 text-primary"></i>
+                        Délibérations
+                        <span class="badge bg-primary ms-2">{{ total }}</span>
+                    </h4>
+                    <a href="/gestion/deliberations/ajouter/" class="btn btn-primary rounded-pill">
+                        <i class="fas fa-plus me-1"></i>Nouvelle délibération
+                    </a>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-success rounded-3">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- STATS -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card bg-success text-white text-center">
+                            <i class="fas fa-check-circle fa-2x mb-2"></i>
+                            <h3 class="fw-bold">{{ admis }}</h3>
+                            <p class="mb-0 small">Admis</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-warning text-white text-center">
+                            <i class="fas fa-exclamation-circle fa-2x mb-2"></i>
+                            <h3 class="fw-bold">{{ ajournes }}</h3>
+                            <p class="mb-0 small">Ajournés</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-danger text-white text-center">
+                            <i class="fas fa-redo fa-2x mb-2"></i>
+                            <h3 class="fw-bold">{{ redoublants }}</h3>
+                            <p class="mb-0 small">Redoublants</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-primary text-white text-center">
+                            <i class="fas fa-users fa-2x mb-2"></i>
+                            <h3 class="fw-bold">{{ total }}</h3>
+                            <p class="mb-0 small">Total</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FILTRES -->
+                <div class="card card-main mb-4">
+                    <div class="card-body">
+                        <form method="get" class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Rechercher</label>
+                                <input type="text" name="search" class="form-control" placeholder="Nom, matricule..." value="{{ search }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Année académique</label>
+                                <select name="annee" class="form-select">
+                                    <option value="">Toutes les années</option>
+                                    {% for a in annees %}
+                                    <option value="{{ a }}" {% if a == annee_selected %}selected{% endif %}>{{ a }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Décision</label>
+                                <select name="decision" class="form-select">
+                                    <option value="">Toutes les décisions</option>
+                                    <option value="admis" {% if decision_selected == 'admis' %}selected{% endif %}>✅ Admis</option>
+                                    <option value="ajourne" {% if decision_selected == 'ajourne' %}selected{% endif %}>⚠️ Ajourné</option>
+                                    <option value="autorise_dettes" {% if decision_selected == 'autorise_dettes' %}selected{% endif %}>📋 Autorisé avec dettes</option>
+                                    <option value="redoublement" {% if decision_selected == 'redoublement' %}selected{% endif %}>🔄 Redoublement</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search me-1"></i>Filtrer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- TABLEAU -->
+                <div class="card card-main">
+                    <div class="card-header">
+                        <i class="fas fa-list me-2"></i>Liste des délibérations
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Étudiant</th>
+                                        <th>Matricule</th>
+                                        <th>Année</th>
+                                        <th>Moyenne</th>
+                                        <th>Décision</th>
+                                        <th>Observations</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for d in deliberations %}
+                                    <tr>
+                                        <td class="ps-4 fw-bold small">{{ d.etudiant.nom }} {{ d.etudiant.prenom }}</td>
+                                        <td><span class="badge bg-secondary">{{ d.etudiant.matricule }}</span></td>
+                                        <td><span class="badge bg-info">{{ d.annee_academique }}</span></td>
+                                        <td class="fw-bold {% if d.moyenne_generale and d.moyenne_generale >= 10 %}text-success{% else %}text-danger{% endif %}">
+                                            {% if d.moyenne_generale %}{{ d.moyenne_generale|floatformat:2 }}/20{% else %}—{% endif %}
+                                        </td>
+                                        <td>
+                                            {% if d.decision == 'admis' %}<span class="badge bg-success">✅ Admis</span>
+                                            {% elif d.decision == 'ajourne' %}<span class="badge bg-warning">⚠️ Ajourné</span>
+                                            {% elif d.decision == 'autorise_dettes' %}<span class="badge bg-info">📋 Autorisé avec dettes</span>
+                                            {% else %}<span class="badge bg-danger">🔄 Redoublement</span>{% endif %}
+                                        </td>
+                                        <td class="small text-muted">{{ d.observations|default:"—"|truncatechars:40 }}</td>
+                                        <td class="small text-muted">{{ d.date_deliberation|date:"d/m/Y" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-muted">
+                                            <i class="fas fa-inbox fa-2x d-block mb-2"></i>
+                                            Aucune délibération trouvée
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

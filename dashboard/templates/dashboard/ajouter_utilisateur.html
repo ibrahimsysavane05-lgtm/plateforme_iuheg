@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter Utilisateur — EduNova IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); }
+        .card-form { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 700px; margin: 30px auto; }
+        .card-form .card-header { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border-radius: 15px 15px 0 0 !important; padding: 20px; font-weight: 600; }
+        .form-label { font-weight: 600; color: #1a3a6b; }
+        .form-control, .form-select { border: 2px solid #e0e7ff; border-radius: 10px; padding: 10px 15px; }
+        .form-control:focus, .form-select:focus { border-color: #1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,0.1); }
+        .btn-save { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border: none; border-radius: 10px; padding: 12px 30px; font-weight: 600; }
+        .btn-save:hover { opacity: 0.9; color: white; }
+        .badge-info-groupe { background: #f0f4ff; border: 1px solid #e0e7ff; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark px-4 py-2">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'images/logo_iuheg_original.jpg' %}" height="40" class="rounded-circle border border-white border-2">
+            <span class="navbar-brand mb-0 fw-bold">EduNova IUHEG — Nouvel Utilisateur</span>
+        </div>
+        <a href="/gestion/utilisateurs/" class="btn btn-sm btn-outline-light">
+            <i class="fas fa-arrow-left me-1"></i>Retour
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="card card-form">
+            <div class="card-header">
+                <i class="fas fa-user-plus me-2"></i>Créer un compte utilisateur
+            </div>
+            <div class="card-body p-4">
+
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-danger rounded-3">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="badge-info-groupe mb-4">
+                    <p class="fw-bold mb-2 text-primary"><i class="fas fa-info-circle me-1"></i>Droits par profil :</p>
+                    <div class="row g-2">
+                        <div class="col-md-6 small"><span class="badge bg-info me-1">Scolarité</span> Inscriptions, notes, délibérations</div>
+                        <div class="col-md-6 small"><span class="badge bg-success me-1">Comptabilité</span> Paiements, reçus, rapports financiers</div>
+                        <div class="col-md-6 small"><span class="badge bg-warning me-1">Direction</span> Dashboard complet, statistiques, export</div>
+                        <div class="col-md-6 small"><span class="badge bg-secondary me-1">Enseignants</span> Saisie des notes uniquement</div>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Prénom</label>
+                            <input type="text" name="prenom" class="form-control" placeholder="Prénom" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nom</label>
+                            <input type="text" name="nom" class="form-control" placeholder="Nom de famille" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nom d'utilisateur</label>
+                            <input type="text" name="username" class="form-control" placeholder="Ex: amadou.diallo" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" placeholder="email@iuheg.education">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Mot de passe</label>
+                            <input type="password" name="password" class="form-control" placeholder="Mot de passe sécurisé" required minlength="6">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Profil / Groupe</label>
+                            <select name="groupe" class="form-select" required>
+                                <option value="">-- Choisir un profil --</option>
+                                {% for groupe in groupes %}
+                                <option value="{{ groupe.id }}">{{ groupe.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-user-plus me-2"></i>Créer l'utilisateur
+                        </button>
+                        <a href="/gestion/utilisateurs/" class="btn btn-outline-secondary rounded-pill">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

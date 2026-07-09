@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents — EduNova IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); }
+        .sidebar { background-color: #1a3a6b; min-height: 100vh; padding-top: 20px; }
+        .sidebar a { color: rgba(255,255,255,0.8); text-decoration: none; padding: 12px 20px; display: block; border-radius: 10px; margin: 3px 10px; transition: all 0.3s; }
+        .sidebar a:hover { background-color: rgba(255,255,255,0.15); color: white; }
+        .sidebar .active { background-color: rgba(255,255,255,0.2); color: white; }
+        .sidebar .menu-title { color: rgba(255,255,255,0.4); font-size: 0.75rem; font-weight: 700; padding: 10px 20px; letter-spacing: 1px; }
+        .card-main { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .card-main .card-header { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border-radius: 15px 15px 0 0 !important; padding: 15px 20px; font-weight: 600; }
+        .stat-card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark px-4 py-2">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'images/logo_iuheg_original.jpg' %}" height="45" class="rounded-circle border border-white border-2">
+            <div>
+                <div class="fw-bold text-white">EduNova IUHEG — Gestion des Documents</div>
+                <div class="text-white-50" style="font-size:0.75rem">Institut Universitaire des Hautes Études de Guinée</div>
+            </div>
+        </div>
+        <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light">
+            <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
+        </a>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar py-2">
+                <p class="menu-title">NAVIGATION</p>
+                <a href="/gestion/"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                <a href="/gestion/etudiants/"><i class="fas fa-user-graduate me-2"></i>Étudiants</a>
+                <a href="/gestion/reinscription/"><i class="fas fa-redo me-2"></i>Réinscription</a>
+                <a href="/gestion/notes/"><i class="fas fa-clipboard-list me-2"></i>Notes</a>
+                <a href="/gestion/paiements/"><i class="fas fa-money-bill me-2"></i>Paiements</a>
+                <a href="/gestion/paiements/historique/"><i class="fas fa-history me-2"></i>Historique</a>
+                <a href="/gestion/deliberations/"><i class="fas fa-graduation-cap me-2"></i>Délibérations</a>
+                <a href="/gestion/cours/"><i class="fas fa-book me-2"></i>Cours</a>
+                <a href="/gestion/utilisateurs/"><i class="fas fa-users-cog me-2"></i>Utilisateurs</a>
+                <a href="/gestion/documents/" class="active"><i class="fas fa-folder me-2"></i>Documents</a>
+                <p class="menu-title mt-3">SYSTÈME</p>
+                <a href="/admin/"><i class="fas fa-cog me-2"></i>Administration</a>
+                <a href="/portail/login/"><i class="fas fa-user me-2"></i>Portail Étudiant</a>
+            </div>
+
+            <div class="col-md-10 py-4 px-4">
+                <h4 class="fw-bold text-dark mb-4">
+                    <i class="fas fa-folder me-2 text-primary"></i>
+                    Gestion des Documents
+                    <span class="badge bg-primary ms-2">{{ total }}</span>
+                </h4>
+
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'warning' %}warning{% else %}success{% endif %} rounded-3">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-card bg-warning text-white">
+                            <i class="fas fa-clock fa-2x mb-2"></i>
+                            <h3 class="fw-bold">{{ en_attente }}</h3>
+                            <p class="mb-0 small">En attente</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card bg-success text-white">
+                            <i class="fas fa-check-circle fa-2x mb-2"></i>
+                            <h3 class="fw-bold">{{ valides }}</h3>
+                            <p class="mb-0 small">Validés</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card bg-danger text-white">
+                            <i class="fas fa-times-circle fa-2x mb-2"></i>
+                            <h3 class="fw-bold">{{ rejetes }}</h3>
+                            <p class="mb-0 small">Rejetés</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-main mb-4">
+                    <div class="card-body">
+                        <form method="get" class="row g-3 align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label small fw-bold">Rechercher</label>
+                                <input type="text" name="search" class="form-control" placeholder="Nom étudiant, matricule..." value="{{ search }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Statut</label>
+                                <select name="statut" class="form-select">
+                                    <option value="">Tous les statuts</option>
+                                    <option value="en_attente" {% if statut_selected == 'en_attente' %}selected{% endif %}>⏳ En attente</option>
+                                    <option value="valide" {% if statut_selected == 'valide' %}selected{% endif %}>✅ Validé</option>
+                                    <option value="rejete" {% if statut_selected == 'rejete' %}selected{% endif %}>❌ Rejeté</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search me-1"></i>Filtrer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card card-main">
+                    <div class="card-header">
+                        <i class="fas fa-list me-2"></i>Liste des documents soumis
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Étudiant</th>
+                                        <th>Type</th>
+                                        <th>Fichier</th>
+                                        <th>Statut</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for doc in documents %}
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="fw-bold small">{{ doc.etudiant.nom }} {{ doc.etudiant.prenom }}</div>
+                                            <div class="text-muted" style="font-size:0.75rem">{{ doc.etudiant.matricule }}</div>
+                                        </td>
+                                        <td><span class="badge bg-secondary">{{ doc.type_document }}</span></td>
+                                        <td>
+                                            {% if doc.fichier %}
+                                            <a href="{{ doc.fichier.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i>Voir
+                                            </a>
+                                            {% else %}<span class="text-muted small">—</span>{% endif %}
+                                        </td>
+                                        <td>
+                                            {% if doc.statut == 'en_attente' %}<span class="badge bg-warning">⏳ En attente</span>
+                                            {% elif doc.statut == 'valide' %}<span class="badge bg-success">✅ Validé</span>
+                                            {% else %}<span class="badge bg-danger">❌ Rejeté</span>{% endif %}
+                                        </td>
+                                        <td class="small text-muted">{{ doc.date_upload|date:"d/m/Y" }}</td>
+                                        <td>
+                                            {% if doc.statut == 'en_attente' %}
+                                            <form method="post" action="/gestion/documents/{{ doc.id }}/valider/" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="valider">
+                                                <button type="submit" class="btn btn-sm btn-success me-1"><i class="fas fa-check"></i></button>
+                                            </form>
+                                            <form method="post" action="/gestion/documents/{{ doc.id }}/valider/" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="rejeter">
+                                                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
+                                            </form>
+                                            {% else %}<span class="text-muted small">—</span>{% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted">
+                                            <i class="fas fa-folder-open fa-2x d-block mb-2"></i>
+                                            Aucun document trouvé
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

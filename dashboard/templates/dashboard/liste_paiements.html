@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiements — IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); }
+        .sidebar { background-color: #1a3a6b; min-height: 100vh; padding-top: 20px; }
+        .sidebar a { color: rgba(255,255,255,0.8); text-decoration: none; padding: 12px 20px; display: block; border-radius: 10px; margin: 3px 10px; transition: all 0.3s; }
+        .sidebar a:hover { background-color: rgba(255,255,255,0.15); color: white; }
+        .sidebar .active { background-color: rgba(255,255,255,0.2); color: white; }
+        .sidebar .menu-title { color: rgba(255,255,255,0.4); font-size: 0.75rem; font-weight: 700; padding: 10px 20px; letter-spacing: 1px; }
+        .card-main { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .card-main .card-header { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border-radius: 15px 15px 0 0 !important; padding: 15px 20px; font-weight: 600; }
+        .stat-card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 20px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark px-4 py-2">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'images/logo_iuheg_original.jpg' %}" height="45" class="rounded-circle border border-white border-2">
+            <div>
+                <div class="fw-bold text-white">IUHEG — Gestion des Paiements</div>
+                <div class="text-white-50" style="font-size:0.75rem">Institut Universitaire des Hautes Études de Guinée</div>
+            </div>
+        </div>
+        <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light">
+            <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
+        </a>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar py-2">
+                <p class="menu-title">NAVIGATION</p>
+                <a href="/gestion/"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                <a href="/gestion/etudiants/"><i class="fas fa-user-graduate me-2"></i>Étudiants</a>
+                <a href="/gestion/notes/"><i class="fas fa-clipboard-list me-2"></i>Notes</a>
+                <a href="/gestion/paiements/" class="active"><i class="fas fa-money-bill me-2"></i>Paiements</a>
+                <a href="/gestion/paiements/"><i class="fas fa-receipt me-2"></i>Reçus</a>
+                <a href="/admin/documents/document/"><i class="fas fa-folder me-2"></i>Documents</a>
+                <a href="/gestion/deliberations/"><i class="fas fa-graduation-cap me-2"></i>Délibérations</a>
+                <p class="menu-title mt-3">SYSTÈME</p>
+                <a href="/admin/"><i class="fas fa-cog me-2"></i>Administration</a>
+                <a href="/portail/login/"><i class="fas fa-user-graduate me-2"></i>Portail Étudiant</a>
+            </div>
+
+            <div class="col-md-10 py-4 px-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold text-dark mb-0">
+                        <i class="fas fa-money-bill me-2 text-primary"></i>
+                        Gestion des Paiements
+                        <span class="badge bg-primary ms-2">{{ total }}</span>
+                    </h4>
+                    <a href="/gestion/paiements/ajouter/" class="btn btn-primary rounded-pill">
+                        <i class="fas fa-plus me-1"></i>Ajouter un paiement
+                    </a>
+                </div>
+
+                <!-- STATS -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-card bg-white" style="border-left: 5px solid #1a3a6b;">
+                            <p class="text-muted small mb-1">Total Encaissé</p>
+                            <h4 class="fw-bold text-primary">{{ total_encaisse|floatformat:0 }} GNF</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card bg-white" style="border-left: 5px solid #dc3545;">
+                            <p class="text-muted small mb-1">Total Reste à Payer</p>
+                            <h4 class="fw-bold text-danger">{{ total_reste|floatformat:0 }} GNF</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card bg-white" style="border-left: 5px solid #28a745;">
+                            <p class="text-muted small mb-1">Nombre de Paiements</p>
+                            <h4 class="fw-bold text-success">{{ total }}</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FILTRES -->
+                <div class="card card-main mb-4">
+                    <div class="card-body">
+                        <form method="get" class="row g-3 align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label small fw-bold">Rechercher</label>
+                                <input type="text" name="search" class="form-control"
+                                       placeholder="Nom, matricule, référence..." value="{{ search }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Statut</label>
+                                <select name="statut" class="form-select">
+                                    <option value="">Tous les statuts</option>
+                                    <option value="a_jour" {% if statut_selected == 'a_jour' %}selected{% endif %}>À jour</option>
+                                    <option value="retard" {% if statut_selected == 'retard' %}selected{% endif %}>En retard</option>
+                                    <option value="solde" {% if statut_selected == 'solde' %}selected{% endif %}>Soldé</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search me-1"></i>Filtrer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- TABLEAU -->
+                <div class="card card-main">
+                    <div class="card-header">
+                        <i class="fas fa-list me-2"></i>Liste des paiements
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Référence</th>
+                                        <th>Étudiant</th>
+                                        <th>Tranche</th>
+                                        <th>Montant Total</th>
+                                        <th>Montant Payé</th>
+                                        <th>Reste</th>
+                                        <th>Statut</th>
+                                        <th>Date</th>
+                                        <th>Reçu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in paiements %}
+                                    <tr>
+                                        <td class="ps-4"><span class="badge bg-secondary">{{ p.reference }}</span></td>
+                                        <td>
+                                            <div class="fw-bold small">{{ p.etudiant.nom }} {{ p.etudiant.prenom }}</div>
+                                            <div class="text-muted" style="font-size:0.75rem">{{ p.etudiant.matricule }}</div>
+                                        </td>
+                                        <td class="small">{{ p.get_tranche_display }}</td>
+                                        <td class="small">{{ p.montant_total|floatformat:0 }} GNF</td>
+                                        <td class="text-success fw-bold small">{{ p.montant_paye|floatformat:0 }} GNF</td>
+                                        <td class="text-danger small">{{ p.reste_a_payer|floatformat:0 }} GNF</td>
+                                        <td>
+                                            {% if p.statut == 'a_jour' %}
+                                            <span class="badge bg-success">✅ À jour</span>
+                                            {% elif p.statut == 'retard' %}
+                                            <span class="badge bg-danger">⚠️ Retard</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">✔️ Soldé</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="small text-muted">{{ p.date_paiement|date:"d/m/Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'generer_recu' p.id %}"
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="9" class="text-center py-4 text-muted">
+                                            <i class="fas fa-inbox fa-2x d-block mb-2"></i>
+                                            Aucun paiement trouvé
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

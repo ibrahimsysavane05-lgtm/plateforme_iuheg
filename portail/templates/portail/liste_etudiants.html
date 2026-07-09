@@ -1,0 +1,155 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Étudiants du cours - IUHEG</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+</head>
+
+
+<body class="bg-light">
+
+
+<div class="container mt-5">
+
+
+<div class="card shadow p-4">
+
+
+<h2 class="text-primary">
+📚 {{ cours.nom }}
+</h2>
+
+
+<p>
+<strong>Code :</strong> {{ cours.code }}
+</p>
+
+
+<p>
+<strong>Semestre :</strong> {{ cours.semestre }}
+</p>
+
+
+<hr>
+
+
+<h4>
+👨‍🎓 Liste des étudiants inscrits
+</h4>
+
+
+<table class="table table-striped mt-3">
+
+<thead>
+
+<tr>
+
+<th>Matricule</th>
+
+<th>Nom</th>
+
+<th>Prénom</th>
+
+<th>Email</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+
+
+<tbody>
+
+
+{% for etudiant in etudiants %}
+
+
+<tr>
+
+<td>
+{{ etudiant.matricule }}
+</td>
+
+
+<td>
+{{ etudiant.nom }}
+</td>
+
+
+<td>
+{{ etudiant.prenom }}
+</td>
+
+
+<td>
+{{ etudiant.email }}
+</td>
+
+
+<td>
+
+<a href="{% url 'saisir_note' cours.id etudiant.id %}"
+class="btn btn-primary btn-sm">
+
+📝 Saisir note
+
+</a>
+
+</td>
+
+
+</tr>
+
+
+{% empty %}
+
+
+<tr>
+
+<td colspan="5" class="text-center">
+
+Aucun étudiant inscrit dans ce cours.
+
+</td>
+
+</tr>
+
+
+{% endfor %}
+
+
+</tbody>
+
+
+</table>
+
+
+
+<a href="{% url 'mes_cours' %}" class="btn btn-secondary">
+
+⬅ Retour aux cours
+
+</a>
+
+
+</div>
+
+
+</div>
+
+
+</body>
+
+</html>

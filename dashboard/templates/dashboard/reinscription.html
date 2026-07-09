@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réinscription — EduNova IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); }
+        .sidebar { background-color: #1a3a6b; min-height: 100vh; padding-top: 20px; }
+        .sidebar a { color: rgba(255,255,255,0.8); text-decoration: none; padding: 12px 20px; display: block; border-radius: 10px; margin: 3px 10px; transition: all 0.3s; }
+        .sidebar a:hover { background-color: rgba(255,255,255,0.15); color: white; }
+        .sidebar .active { background-color: rgba(255,255,255,0.2); color: white; }
+        .sidebar .menu-title { color: rgba(255,255,255,0.4); font-size: 0.75rem; font-weight: 700; padding: 10px 20px; letter-spacing: 1px; }
+        .card-main { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .card-main .card-header { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border-radius: 15px 15px 0 0 !important; padding: 15px 20px; font-weight: 600; }
+        .avatar { width: 38px; height: 38px; background: linear-gradient(135deg, #1a3a6b, #2d5aa0); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.9rem; }
+        .reinscrire-form { background: #f0f4ff; border-radius: 10px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark px-4 py-2">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'images/logo_iuheg_original.jpg' %}" height="45" class="rounded-circle border border-white border-2">
+            <div>
+                <div class="fw-bold text-white">EduNova IUHEG — Réinscription</div>
+                <div class="text-white-50" style="font-size:0.75rem">Institut Universitaire des Hautes Études de Guinée</div>
+            </div>
+        </div>
+        <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light">
+            <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
+        </a>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar py-2">
+                <p class="menu-title">NAVIGATION</p>
+                <a href="/gestion/"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                <a href="/gestion/etudiants/"><i class="fas fa-user-graduate me-2"></i>Étudiants</a>
+                <a href="/gestion/reinscription/" class="active"><i class="fas fa-redo me-2"></i>Réinscription</a>
+                <a href="/gestion/notes/"><i class="fas fa-clipboard-list me-2"></i>Notes</a>
+                <a href="/gestion/paiements/"><i class="fas fa-money-bill me-2"></i>Paiements</a>
+                <a href="/gestion/deliberations/"><i class="fas fa-graduation-cap me-2"></i>Délibérations</a>
+                <a href="/gestion/cours/"><i class="fas fa-book me-2"></i>Cours</a>
+                <a href="/gestion/utilisateurs/"><i class="fas fa-users-cog me-2"></i>Utilisateurs</a>
+                <p class="menu-title mt-3">SYSTÈME</p>
+                <a href="/admin/"><i class="fas fa-cog me-2"></i>Administration</a>
+            </div>
+
+            <div class="col-md-10 py-4 px-4">
+                <h4 class="fw-bold text-dark mb-4">
+                    <i class="fas fa-redo me-2 text-primary"></i>Réinscription Année Académique
+                </h4>
+
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} rounded-3">
+                        <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="alert alert-info rounded-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    La réinscription crée un nouveau dossier pour l'année suivante en conservant toutes les informations personnelles de l'étudiant. L'historique des années précédentes (notes, paiements, délibérations) reste intact et consultable.
+                </div>
+
+                <!-- FILTRE ANNÉE SOURCE -->
+                <div class="card card-main mb-4">
+                    <div class="card-body">
+                        <form method="get" class="row g-3 align-items-end">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Filtrer par année académique source</label>
+                                <select name="annee_source" class="form-select" onchange="this.form.submit()">
+                                    <option value="">Toutes les années</option>
+                                    {% for a in annees_existantes %}
+                                    <option value="{{ a }}" {% if a == annee_active %}selected{% endif %}>{{ a }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- LISTE ÉTUDIANTS ACTIFS À RÉINSCRIRE -->
+                <div class="card card-main">
+                    <div class="card-header">
+                        <i class="fas fa-user-graduate me-2"></i>Étudiants actifs éligibles à la réinscription
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Étudiant</th>
+                                        <th>Matricule actuel</th>
+                                        <th>Niveau actuel</th>
+                                        <th>Année actuelle</th>
+                                        <th>Réinscrire pour</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for etudiant in etudiants %}
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="avatar">{{ etudiant.nom|first }}{{ etudiant.prenom|first }}</div>
+                                                <span class="fw-bold small">{{ etudiant.nom }} {{ etudiant.prenom }}</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-secondary">{{ etudiant.matricule }}</span></td>
+                                        <td><span class="badge bg-info">{{ etudiant.niveau }}</span></td>
+                                        <td><span class="badge bg-light text-dark">{{ etudiant.annee_academique }}</span></td>
+                                        <td>
+                                            <form method="post" class="d-flex gap-2 reinscrire-form">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="etudiant_id" value="{{ etudiant.id }}">
+                                                <input type="text" name="nouvelle_annee" class="form-control form-control-sm" placeholder="Ex: 2026-2027" style="width:130px" required>
+                                                <select name="nouveau_niveau" class="form-select form-select-sm" style="width:100px" required>
+                                                    <option value="L1">L1</option>
+                                                    <option value="L2">L2</option>
+                                                    <option value="L3" selected>L3</option>
+                                                    <option value="M1">M1</option>
+                                                    <option value="M2">M2</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-redo me-1"></i>Réinscrire
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            <i class="fas fa-inbox fa-2x d-block mb-2"></i>
+                                            Aucun étudiant actif trouvé
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

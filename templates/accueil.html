@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduNova IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, rgba(10,22,40,0.95) 0%, rgba(26,58,107,0.90) 50%, rgba(10,22,40,0.95) 100%),
+                        url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1600&q=80') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar-top {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar-brand-custom { display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; }
+        .navbar-brand-custom img { height: 50px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); }
+        .brand-text h1 { font-size: 1.2rem; font-weight: 700; color: white; margin: 0; }
+        .brand-text p { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin: 0; }
+        .hero { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+        .hero-content { text-align: center; color: white; max-width: 850px; }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(224,123,0,0.2);
+            border: 1px solid rgba(224,123,0,0.5);
+            color: #e07b00; padding: 6px 20px;
+            border-radius: 50px; font-size: 0.85rem;
+            font-weight: 600; margin-bottom: 20px;
+        }
+        .hero h2 {
+            font-size: 2.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 15px;
+            background: linear-gradient(135deg, #ffffff, #a8c4f0);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero p { font-size: 1rem; color: rgba(255,255,255,0.7); margin-bottom: 30px; }
+        .modules-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 30px; }
+        .module-card {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px; padding: 15px 10px;
+            text-align: center; transition: all 0.3s;
+        }
+        .module-card:hover { background: rgba(255,255,255,0.15); transform: translateY(-3px); }
+        .module-card i { font-size: 1.6rem; color: #e07b00; margin-bottom: 6px; display: block; }
+        .module-card p { font-size: 0.78rem; color: rgba(255,255,255,0.8); margin: 0; }
+        .login-section { display: flex; justify-content: center; padding: 0 20px 40px; }
+        .login-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 20px; padding: 35px;
+            width: 100%; max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .login-card h3 { color: #1a3a6b; font-weight: 700; text-align: center; margin-bottom: 5px; }
+        .subtitle { color: #666; text-align: center; font-size: 0.9rem; margin-bottom: 25px; }
+        .form-label { font-weight: 600; color: #1a3a6b; font-size: 0.9rem; }
+        .form-control { border: 2px solid #e0e7ff; border-radius: 10px; padding: 11px 15px; }
+        .form-control:focus { border-color: #1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,0.1); }
+        .btn-login {
+            background: linear-gradient(135deg, #1a3a6b, #2d5aa0);
+            color: white; border: none; border-radius: 10px;
+            padding: 13px; font-size: 1rem; font-weight: 600;
+            width: 100%; transition: all 0.3s; margin-top: 10px;
+        }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(26,58,107,0.4); color: white; }
+        .btn-dashboard {
+            background: linear-gradient(135deg, #e07b00, #f59e0b);
+            color: white; border: none; border-radius: 10px;
+            padding: 13px; font-size: 1rem; font-weight: 600;
+            width: 100%; transition: all 0.3s; text-decoration: none;
+            display: block; text-align: center; margin-bottom: 10px;
+        }
+        .btn-dashboard:hover { transform: translateY(-2px); color: white; }
+        .btn-logout {
+            background: transparent; color: #dc3545;
+            border: 2px solid #dc3545; border-radius: 10px;
+            padding: 10px; font-size: 0.9rem; font-weight: 600;
+            width: 100%; transition: all 0.3s; text-decoration: none;
+            display: block; text-align: center;
+        }
+        .btn-logout:hover { background: #dc3545; color: white; }
+        .footer {
+            background: rgba(0,0,0,0.3); color: rgba(255,255,255,0.5);
+            text-align: center; padding: 12px; font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar-top">
+        <a href="/" class="navbar-brand-custom">
+            <img src="{% static 'images/logo_iuheg.png' %}" alt="Logo IUHEG">
+            <div class="brand-text">
+                <h1>IUHEG</h1>
+                <p>Institut Universitaire des Hautes Études de Guinée</p>
+            </div>
+        </a>
+        <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">
+            <i class="fas fa-circle text-success me-1" style="font-size:0.5rem"></i>
+            Système en ligne
+        </div>
+    </div>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star me-1"></i> PLATEFORME OFFICIELLE 2025-2026
+            </div>
+            <h2>Gestion Académique<br>& Financière Digitale</h2>
+            <p>Une solution complète pour centraliser toutes les opérations administratives,<br>financières et académiques de l'IUHEG.</p>
+            <div class="modules-grid">
+                <div class="module-card"><i class="fas fa-user-graduate"></i><p>Inscriptions</p></div>
+                <div class="module-card"><i class="fas fa-money-bill-wave"></i><p>Paiements</p></div>
+                <div class="module-card"><i class="fas fa-clipboard-list"></i><p>Notes & Moyennes</p></div>
+                <div class="module-card"><i class="fas fa-chart-bar"></i><p>Dashboard</p></div>
+                <div class="module-card"><i class="fas fa-receipt"></i><p>Reçus PDF</p></div>
+                <div class="module-card"><i class="fas fa-folder-open"></i><p>Documents</p></div>
+                <div class="module-card"><i class="fas fa-graduation-cap"></i><p>Délibérations</p></div>
+                <div class="module-card"><i class="fas fa-shield-alt"></i><p>Sécurisé</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-section">
+        <div class="login-card">
+            {% if user.is_authenticated %}
+                <h3><i class="fas fa-check-circle me-2" style="color:#28a745"></i>Connecté</h3>
+                <p class="subtitle">Bienvenue, <strong>{{ user.username }}</strong> !</p>
+                <a href="{% url 'dashboard' %}" class="btn-dashboard">
+                    <i class="fas fa-tachometer-alt me-2"></i>Accéder au Dashboard
+                </a>
+                <a href="{% url 'logout' %}" class="btn-logout">
+                    <i class="fas fa-sign-out-alt me-2"></i>Se déconnecter
+                </a>
+            {% else %}
+                <h3><i class="fas fa-lock me-2" style="color:#1a3a6b"></i>Connexion</h3>
+                <p class="subtitle">Accédez à votre espace personnel</p>
+                {% if form.errors %}
+                <div class="alert alert-danger rounded-3">Identifiants incorrects. Réessayez.</div>
+                {% endif %}
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="/dashboard/">
+                    <div class="mb-3">
+                        <label class="form-label"><i class="fas fa-user me-1"></i>Nom d'utilisateur</label>
+                        <input type="text" name="username" class="form-control" placeholder="Votre identifiant" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><i class="fas fa-lock me-1"></i>Mot de passe</label>
+                        <input type="password" name="password" class="form-control" placeholder="Votre mot de passe" required>
+                    </div>
+                    <button type="submit" class="btn-login">
+                        <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+                    </button>
+                </form>
+            {% endif %}
+            <hr class="my-3">
+            <div style="text-align:center; color:#666; font-size:0.82rem;">
+                <i class="fas fa-phone me-1 text-primary"></i>+224 625 35 35 10 &nbsp;|&nbsp;
+                <i class="fas fa-envelope me-1 text-primary"></i>ramatoulaye.diallo@iuheg.education
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2026 IUHEG — Tous droits réservés | Développé par les étudiants en Informatique Décisionnelle
+    </div>
+</body>
+</html>

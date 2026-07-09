@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter Cours — EduNova IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); }
+        .card-form { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 700px; margin: 30px auto; }
+        .card-form .card-header { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border-radius: 15px 15px 0 0 !important; padding: 20px; font-weight: 600; }
+        .form-label { font-weight: 600; color: #1a3a6b; }
+        .form-control, .form-select { border: 2px solid #e0e7ff; border-radius: 10px; padding: 10px 15px; }
+        .form-control:focus, .form-select:focus { border-color: #1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,0.1); }
+        .btn-save { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border: none; border-radius: 10px; padding: 12px 30px; font-weight: 600; }
+        .btn-save:hover { opacity: 0.9; color: white; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark px-4 py-2">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'images/logo_iuheg_original.jpg' %}" height="40" class="rounded-circle border border-white border-2">
+            <span class="navbar-brand mb-0 fw-bold">EduNova IUHEG — Nouveau Cours</span>
+        </div>
+        <a href="/gestion/cours/" class="btn btn-sm btn-outline-light">
+            <i class="fas fa-arrow-left me-1"></i>Retour
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="card card-form">
+            <div class="card-header">
+                <i class="fas fa-book me-2"></i>Ajouter un nouveau cours
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Code du cours</label>
+                            <input type="text" name="code" class="form-control" placeholder="Ex: INFO301" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nom du cours</label>
+                            <input type="text" name="nom" class="form-control" placeholder="Ex: Base de données avancée" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Filière</label>
+                            <select name="filiere" class="form-select" required>
+                                <option value="">-- Choisir --</option>
+                                <option value="Informatique Décisionnelle">Informatique Décisionnelle</option>
+                                <option value="Génie Logiciel">Génie Logiciel</option>
+                                <option value="Réseaux et Télécommunications">Réseaux et Télécommunications</option>
+                                <option value="Finance et Comptabilité">Finance et Comptabilité</option>
+                                <option value="Gestion des Entreprises">Gestion des Entreprises</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Niveau</label>
+                            <select name="niveau" class="form-select" required>
+                                <option value="">-- Choisir --</option>
+                                <option value="L1">Licence 1</option>
+                                <option value="L2">Licence 2</option>
+                                <option value="L3">Licence 3</option>
+                                <option value="M1">Master 1</option>
+                                <option value="M2">Master 2</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Semestre</label>
+                            <select name="semestre" class="form-select" required>
+                                <option value="S1">Semestre 1</option>
+                                <option value="S2">Semestre 2</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Crédits</label>
+                            <input type="number" name="credits" class="form-control" value="3" min="1" max="10" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Coefficient</label>
+                            <input type="number" name="coefficient" class="form-control" value="1" min="1" max="5" step="0.5" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Année académique</label>
+                            <input type="text" name="annee_academique" class="form-control" value="2025-2026" required>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-save me-2"></i>Enregistrer le cours
+                        </button>
+                        <a href="/gestion/cours/" class="btn btn-outline-secondary rounded-pill">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

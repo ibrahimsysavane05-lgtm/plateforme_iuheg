@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Administration — EduNova IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0d1f3c, #1a3a6b);
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            max-width: 420px;
+            width: 100%;
+            padding: 40px 35px;
+        }
+        .login-logo { width: 90px; height: 90px; border-radius: 50%; border: 4px solid #e07b00; margin: 0 auto 15px; display: block; }
+        .login-title { color: #1a3a6b; font-weight: 700; text-align: center; font-size: 1.4rem; }
+        .login-subtitle { color: #64748b; text-align: center; font-size: 0.9rem; margin-bottom: 25px; }
+        .form-label { font-weight: 600; color: #1a3a6b; font-size: 0.9rem; }
+        .form-control { border: 2px solid #e0e7ff; border-radius: 10px; padding: 12px 15px; }
+        .form-control:focus { border-color: #1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,0.1); }
+        .btn-login { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border: none; border-radius: 10px; padding: 12px; font-weight: 600; width: 100%; margin-top: 10px; }
+        .btn-login:hover { opacity: 0.9; color: white; }
+        .badge-role { background: #f0f4ff; color: #1a3a6b; border-radius: 20px; padding: 6px 14px; font-size: 0.75rem; margin: 3px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <img src="{% static 'images/logo_iuheg_original.jpg' %}" class="login-logo" alt="Logo IUHEG">
+        <p class="login-title">EduNova IUHEG</p>
+        <p class="login-subtitle">Espace réservé au personnel administratif</p>
+
+        {% if error %}
+        <div class="alert alert-danger rounded-3 small">
+            <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Nom d'utilisateur</label>
+                <input type="text" name="username" class="form-control" placeholder="Votre identifiant" required autofocus>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Mot de passe</label>
+                <input type="password" name="password" class="form-control" placeholder="Votre mot de passe" required>
+            </div>
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+            </button>
+        </form>
+
+        <div class="text-center mt-4">
+            <p class="small text-muted mb-2">Profils autorisés :</p>
+            <span class="badge-role">Direction</span>
+            <span class="badge-role">Scolarité</span>
+            <span class="badge-role">Comptabilité</span>
+            <span class="badge-role">Enseignants</span>
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="/portail/login/" class="small text-decoration-none">
+                <i class="fas fa-user-graduate me-1"></i>Vous êtes étudiant ? Accédez à votre portail
+            </a>
+        </div>
+    </div>
+</body>
+</html>

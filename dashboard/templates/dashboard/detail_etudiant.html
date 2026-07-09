@@ -1,0 +1,223 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ etudiant.nom }} {{ etudiant.prenom }} — IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); }
+        .card-main { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .card-main .card-header { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border-radius: 15px 15px 0 0 !important; padding: 15px 20px; font-weight: 600; }
+        .avatar-large { width: 80px; height: 80px; background: linear-gradient(135deg, #1a3a6b, #2d5aa0); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: 700; }
+        .note-ok { background: #d4edda; color: #155724; padding: 3px 10px; border-radius: 8px; font-weight: 700; }
+        .note-fail { background: #f8d7da; color: #721c24; padding: 3px 10px; border-radius: 8px; font-weight: 700; }
+        .info-label { font-weight: 600; color: #1a3a6b; font-size: 0.85rem; }
+        .info-value { color: #333; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark px-4 py-2">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'images/logo_iuheg_original.jpg' %}" height="40" class="rounded-circle border border-white border-2">
+            <span class="navbar-brand mb-0 fw-bold">IUHEG — Dossier Étudiant</span>
+        </div>
+        <a href="{% url 'liste_etudiants' %}" class="btn btn-sm btn-outline-light">
+            <i class="fas fa-arrow-left me-1"></i>Retour à la liste
+        </a>
+    </nav>
+
+    <div class="container py-4">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-success rounded-3">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- PROFIL -->
+        <div class="card card-main mb-4">
+            <div class="card-header">
+                <i class="fas fa-user me-2"></i>Profil de l'étudiant
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-4 mb-4">
+                    <div class="avatar-large">
+                        {{ etudiant.nom|first }}{{ etudiant.prenom|first }}
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-1">{{ etudiant.nom }} {{ etudiant.prenom }}</h4>
+                        <span class="badge bg-secondary me-1">{{ etudiant.matricule }}</span>
+                        {% if etudiant.statut == 'actif' %}
+                        <span class="badge bg-success">✅ Actif</span>
+                        {% elif etudiant.statut == 'preinscrit' %}
+                        <span class="badge bg-warning">⏳ Préinscrit</span>
+                        {% elif etudiant.statut == 'inscrit' %}
+                        <span class="badge bg-primary">📝 Inscrit</span>
+                        {% else %}
+                        <span class="badge bg-danger">🚫 Suspendu</span>
+                        {% endif %}
+                    </div>
+                    <!-- Changer statut -->
+                    <div class="ms-auto">
+                        <form method="post" class="d-flex gap-2">
+                            {% csrf_token %}
+                            <select name="statut" class="form-select form-select-sm">
+                                <option value="preinscrit">Préinscrit</option>
+                                <option value="inscrit">Inscrit</option>
+                                <option value="actif" {% if etudiant.statut == 'actif' %}selected{% endif %}>Actif</option>
+                                <option value="suspendu">Suspendu</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="fas fa-save me-1"></i>Changer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <p class="info-label">Email</p>
+                        <p class="info-value">{{ etudiant.email }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="info-label">Téléphone</p>
+                        <p class="info-value">{{ etudiant.telephone }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="info-label">Date de naissance</p>
+                        <p class="info-value">{{ etudiant.date_naissance }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="info-label">Filière</p>
+                        <p class="info-value">{{ etudiant.filiere }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="info-label">Niveau</p>
+                        <p class="info-value">{{ etudiant.niveau }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="info-label">Moyenne Générale</p>
+                        <p class="info-value fw-bold">
+                            {% if moyenne %}{{ moyenne|floatformat:2 }}/20{% else %}N/A{% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- NOTES -->
+            <div class="col-md-6">
+                <div class="card card-main">
+                    <div class="card-header"><i class="fas fa-clipboard-list me-2"></i>Notes</div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover mb-0">
+                            <thead><tr><th class="ps-3">Cours</th><th>CC</th><th>Exam</th><th>Finale</th></tr></thead>
+                            <tbody>
+                                {% for note in notes %}
+                                <tr>
+                                    <td class="ps-3 small">{{ note.cours.nom }}</td>
+                                    <td>{{ note.note_cc|default:"—" }}</td>
+                                    <td>{{ note.note_examen|default:"—" }}</td>
+                                    <td>
+                                        {% if note.note_finale %}
+                                        <span class="{% if note.note_finale >= 10 %}note-ok{% else %}note-fail{% endif %}">
+                                            {{ note.note_finale|floatformat:2 }}
+                                        </span>
+                                        {% else %}—{% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center text-muted py-3">Aucune note</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAIEMENTS -->
+            <div class="col-md-6">
+                <div class="card card-main">
+                    <div class="card-header"><i class="fas fa-money-bill me-2"></i>Paiements</div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover mb-0">
+                            <thead><tr><th class="ps-3">Référence</th><th>Payé</th><th>Reste</th><th>Reçu</th></tr></thead>
+                            <tbody>
+                                {% for p in paiements %}
+                                <tr>
+                                    <td class="ps-3 small">{{ p.reference }}</td>
+                                    <td class="text-success fw-bold small">{{ p.montant_paye|floatformat:0 }}</td>
+                                    <td class="text-danger small">{{ p.reste_a_payer|floatformat:0 }}</td>
+                                    <td>
+                                        <a href="{% url 'generer_recu' p.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center text-muted py-3">Aucun paiement</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DOCUMENTS -->
+            <div class="col-md-6">
+                <div class="card card-main">
+                    <div class="card-header"><i class="fas fa-folder me-2"></i>Documents</div>
+                    <div class="card-body">
+                        {% for doc in documents %}
+                        <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                            <span class="small fw-bold">{{ doc.nom_fichier }}</span>
+                            <div class="d-flex gap-2 align-items-center">
+                                {% if doc.statut == 'valide' %}
+                                <span class="badge bg-success">✅ Validé</span>
+                                {% elif doc.statut == 'en_attente' %}
+                                <span class="badge bg-warning">⏳ En attente</span>
+                                <a href="/admin/documents/document/{{ doc.id }}/change/" class="btn btn-sm btn-outline-success">Valider</a>
+                                {% else %}
+                                <span class="badge bg-danger">❌ Rejeté</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted text-center py-2">Aucun document</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- DÉLIBÉRATION -->
+            <div class="col-md-6">
+                <div class="card card-main">
+                    <div class="card-header"><i class="fas fa-graduation-cap me-2"></i>Délibération</div>
+                    <div class="card-body text-center py-4">
+                        {% if deliberation %}
+                        <h5 class="fw-bold
+                            {% if deliberation.decision == 'admis' %}text-success
+                            {% elif deliberation.decision == 'ajourne' %}text-warning
+                            {% else %}text-danger{% endif %}">
+                            {{ deliberation.get_decision_display }}
+                        </h5>
+                        <p class="text-muted">{{ deliberation.annee_academique }}</p>
+                        {% if deliberation.observations %}
+                        <p class="small">{{ deliberation.observations }}</p>
+                        {% endif %}
+                        {% else %}
+                        <p class="text-muted">Pas encore délibéré</p>
+                        <a href="/gestion/deliberations/ajouter/" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i>Ajouter délibération
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

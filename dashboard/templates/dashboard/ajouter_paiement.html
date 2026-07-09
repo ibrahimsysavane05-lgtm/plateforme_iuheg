@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter Paiement — EduNova IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); }
+        .card-form { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 700px; margin: 30px auto; }
+        .card-form .card-header { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border-radius: 15px 15px 0 0 !important; padding: 20px; font-weight: 600; }
+        .form-label { font-weight: 600; color: #1a3a6b; }
+        .form-control, .form-select { border: 2px solid #e0e7ff; border-radius: 10px; padding: 10px 15px; }
+        .form-control:focus, .form-select:focus { border-color: #1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,0.1); }
+        .btn-save { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border: none; border-radius: 10px; padding: 12px 30px; font-weight: 600; }
+        .btn-save:hover { opacity: 0.9; color: white; }
+        .section-title { color: #1a3a6b; font-weight: 700; border-left: 4px solid #e07b00; padding-left: 12px; margin: 20px 0 15px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark px-4 py-2">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'images/logo_iuheg_original.jpg' %}" height="40" class="rounded-circle border border-white border-2">
+            <span class="navbar-brand mb-0 fw-bold">EduNova IUHEG — Enregistrer un Paiement</span>
+        </div>
+        <a href="{% url 'liste_paiements' %}" class="btn btn-sm btn-outline-light">
+            <i class="fas fa-arrow-left me-1"></i>Retour
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="card card-form">
+            <div class="card-header">
+                <i class="fas fa-money-bill me-2"></i>Nouveau paiement
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <p class="section-title"><i class="fas fa-user me-2"></i>Étudiant</p>
+                    <div class="mb-3">
+                        <label class="form-label">Sélectionner l'étudiant</label>
+                        <select name="etudiant_id" class="form-select" required>
+                            <option value="">-- Choisir un étudiant --</option>
+                            {% for e in etudiants %}
+                            <option value="{{ e.id }}">{{ e.matricule }} — {{ e.nom }} {{ e.prenom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <p class="section-title"><i class="fas fa-money-bill me-2"></i>Détails du paiement</p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tranche</label>
+                            <select name="tranche" class="form-select" required>
+                                <option value="">-- Choisir --</option>
+                                <option value="tranche1">Tranche 1</option>
+                                <option value="tranche2">Tranche 2</option>
+                                <option value="tranche3">Tranche 3</option>
+                                <option value="totalite">Totalité</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Moyen de paiement</label>
+                            <select name="moyen_paiement" class="form-select" required>
+                                <option value="especes">💵 Espèces</option>
+                                <option value="orange_money">📱 Orange Money</option>
+                                <option value="virement">🏦 Virement bancaire</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Montant total de la formation (GNF)</label>
+                            <input type="number" name="montant_total" class="form-control" placeholder="Ex: 5000000" required min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Montant payé (GNF)</label>
+                            <input type="number" name="montant_paye" class="form-control" placeholder="Ex: 2000000" required min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Statut</label>
+                            <select name="statut" class="form-select" required>
+                                <option value="a_jour">✅ À jour</option>
+                                <option value="retard">⚠️ En retard</option>
+                                <option value="solde">✔️ Soldé</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date d'échéance (optionnel)</label>
+                            <input type="date" name="date_echeance" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-save me-2"></i>Enregistrer le paiement
+                        </button>
+                        <a href="{% url 'liste_paiements' %}" class="btn btn-outline-secondary rounded-pill">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

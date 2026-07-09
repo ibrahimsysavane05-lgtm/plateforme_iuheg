@@ -1,0 +1,288 @@
+```html
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Mes cours - IUHEG</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+
+<style>
+
+body{
+    background:#f5f7fb;
+    font-family:'Segoe UI',sans-serif;
+}
+
+
+/* SIDEBAR */
+
+.sidebar{
+
+    width:260px;
+    height:100vh;
+    background:#1a3a6b;
+    position:fixed;
+    padding:20px;
+    color:white;
+
+}
+
+
+.logo{
+
+    text-align:center;
+}
+
+
+.logo img{
+
+    width:90px;
+    height:90px;
+    border-radius:50%;
+
+}
+
+
+.menu a{
+
+    display:block;
+    color:white;
+    text-decoration:none;
+    padding:12px;
+    margin-top:10px;
+    border-radius:8px;
+
+}
+
+
+.menu a:hover{
+
+    background:#e07b00;
+
+}
+
+
+/* CONTENU */
+
+
+.content{
+
+    margin-left:280px;
+    padding:30px;
+
+}
+
+
+
+.card-cours{
+
+    border:none;
+    border-radius:15px;
+    padding:25px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+    background:white;
+
+}
+
+
+.titre{
+
+    color:#1a3a6b;
+    font-weight:bold;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+
+<div class="sidebar">
+
+
+<div class="logo">
+
+<img src="{% static 'images/logo_iuheg_original.jpg' %}">
+
+<h5 class="mt-2">
+IUHEG
+</h5>
+
+</div>
+
+
+<hr>
+
+
+<div class="menu">
+
+
+<a href="{% url 'professeur_accueil' %}">
+<i class="fa fa-home"></i>
+Tableau de bord
+</a>
+
+
+
+<a href="{% url 'mes_cours' %}">
+<i class="fa fa-book"></i>
+Mes cours
+</a>
+
+
+
+<a href="#">
+<i class="fa fa-users"></i>
+Mes étudiants
+</a>
+
+
+
+<a href="#">
+<i class="fa fa-pen"></i>
+Gestion des notes
+</a>
+
+
+
+<a href="#">
+<i class="fa fa-file"></i>
+Documents
+</a>
+
+
+
+<a href="{% url 'portail_logout' %}">
+<i class="fa fa-sign-out"></i>
+Déconnexion
+</a>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="content">
+
+
+<h2 class="titre">
+
+📚 Mes cours
+
+</h2>
+
+
+<p>
+Liste de vos cours enseignés à IUHEG.
+</p>
+
+
+
+<div class="row mt-4">
+
+
+{% for cours in cours %}
+
+
+<div class="col-md-4 mb-4">
+
+
+<div class="card-cours">
+
+
+<h4>
+{{ cours.nom }}
+</h4>
+
+
+<hr>
+
+
+<p>
+<strong>Code :</strong>
+{{ cours.code }}
+</p>
+
+
+
+<p>
+<strong>Semestre :</strong>
+{{ cours.semestre }}
+</p>
+
+
+
+<a href="{% url 'liste_etudiants_cours' cours.id %}" class="btn btn-primary">
+
+    <i class="fa fa-users"></i>
+
+    Voir étudiants
+
+</a>
+
+
+<a href="#" class="btn btn-success">
+
+<i class="fa fa-pen"></i>
+
+Notes
+
+</a>
+
+
+</div>
+
+
+</div>
+
+
+{% empty %}
+
+
+<div class="alert alert-warning">
+
+Aucun cours trouvé.
+
+</div>
+
+
+{% endfor %}
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+</body>
+
+</html>
+```

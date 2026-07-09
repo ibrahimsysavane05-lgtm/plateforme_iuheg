@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter Délibération — IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); }
+        .card-form { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 700px; margin: 30px auto; }
+        .card-form .card-header { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border-radius: 15px 15px 0 0 !important; padding: 20px; font-weight: 600; }
+        .form-label { font-weight: 600; color: #1a3a6b; }
+        .form-control, .form-select { border: 2px solid #e0e7ff; border-radius: 10px; padding: 10px 15px; }
+        .form-control:focus, .form-select:focus { border-color: #1a3a6b; box-shadow: 0 0 0 3px rgba(26,58,107,0.1); }
+        .btn-save { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); color: white; border: none; border-radius: 10px; padding: 12px 30px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark px-4 py-2">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'images/logo_iuheg_original.jpg' %}" height="40" class="rounded-circle border border-white border-2">
+            <span class="navbar-brand mb-0 fw-bold">EduNova IUHEG — Nouvelle Délibération</span>
+        </div>
+        <a href="/gestion/deliberations/" class="btn btn-sm btn-outline-light">
+            <i class="fas fa-arrow-left me-1"></i>Retour
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="card card-form">
+            <div class="card-header">
+                <i class="fas fa-graduation-cap me-2"></i>Enregistrer une délibération
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Étudiant</label>
+                        <select name="etudiant_id" class="form-select" required>
+                            <option value="">-- Choisir un étudiant --</option>
+                            {% for e in etudiants %}
+                            <option value="{{ e.id }}">{{ e.matricule }} — {{ e.nom }} {{ e.prenom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Année académique</label>
+                        <input type="text" name="annee_academique" class="form-control" placeholder="Ex: 2025-2026" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Décision</label>
+                        <select name="decision" class="form-select" required>
+                            <option value="">-- Choisir --</option>
+                            <option value="admis">✅ Admis</option>
+                            <option value="ajourne">⚠️ Ajourné</option>
+                            <option value="autorise_dettes">📋 Autorisé avec dettes</option>
+                            <option value="redoublement">🔄 Redoublement</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Observations (optionnel)</label>
+                        <textarea name="observations" class="form-control" rows="3" placeholder="Remarques particulières..."></textarea>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-save me-2"></i>Enregistrer
+                        </button>
+                        <a href="/gestion/deliberations/" class="btn btn-outline-secondary rounded-pill">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
