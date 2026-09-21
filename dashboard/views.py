@@ -347,7 +347,7 @@ def ajouter_paiement(request):
 
 @staff_member_required
 def gestion_cours(request):
-    from academique.models import Cours
+    from cours.models import Cours
     cours_list = Cours.objects.all().order_by('filiere', 'niveau', 'code')
     filieres = Cours.objects.values_list('filiere', flat=True).distinct()
 
@@ -365,7 +365,7 @@ def gestion_cours(request):
 
 @staff_member_required
 def ajouter_cours(request):
-    from academique.models import Cours
+    from cours.models import Cours
     if request.method == 'POST':
         Cours.objects.create(
             nom=request.POST.get('nom'),

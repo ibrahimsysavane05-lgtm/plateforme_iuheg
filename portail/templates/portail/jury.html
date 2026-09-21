@@ -1,137 +1,74 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-
-<title>Espace Jury IUHEG</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <meta charset="UTF-8">
+    <title>Espace Jury — EduNova IUHEG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1a3a6b, #2d5aa0); }
+    </style>
 </head>
+<body>
+<nav class="navbar navbar-dark px-4 py-2">
+    <div class="d-flex align-items-center gap-3">
+        <img src="{% static 'images/logo_iuheg_original.jpg' %}" height="40" class="rounded-circle border border-white">
+        <span class="fw-bold text-white">EduNova IUHEG — Espace Jury</span>
+    </div>
+    <a href="/portail/logout/" class="btn btn-sm btn-outline-light">Déconnexion</a>
+</nav>
+<div class="container py-4">
+    <h4 class="fw-bold text-dark mb-4">🏛️ Espace Jury — Délibérations</h4>
 
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header" style="background:#1a3a6b; color:white;">
+            <i class="fas fa-graduation-cap me-2"></i>Liste des étudiants actifs
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Étudiant</th>
+                        <th>Matricule</th>
+                        <th>Filière</th>
+                        <th>Niveau</th>
+                        <th>Statut</th>
+                        <th>Délibération</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in etudiants %}
+                    <tr>
+                        <td class="ps-3 fw-bold">{{ e.nom }} {{ e.prenom }}</td>
+                        <td><span class="badge bg-secondary">{{ e.matricule }}</span></td>
+                        <td>{{ e.filiere }}</td>
+                        <td><span class="badge bg-info">{{ e.niveau }}</span></td>
+                        <td><span class="badge bg-success">{{ e.get_statut_display }}</span></td>
+                        <td>
+                            {% for d in deliberations %}
+                                {% if d.etudiant.id == e.id %}
+                                    {% if d.decision == 'admis' %}<span class="badge bg-success">✅ Admis</span>
+                                    {% elif d.decision == 'ajourne' %}<span class="badge bg-warning">⚠️ Ajourné</span>
+                                    {% elif d.decision == 'autorise_dettes' %}<span class="badge bg-info">📋 Autorisé</span>
+                                    {% else %}<span class="badge bg-danger">🔄 Redoublement</span>{% endif %}
+                                {% endif %}
+                            {% empty %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center py-3 text-muted">Aucun étudiant actif</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<body class="bg-light">
-
-
-<div class="container mt-5">
-
-<div class="text-center mb-4">
-
-<img src="{% static 'images/logo_iuheg_original.jpg' %}"
-     width="100"
-     height="100"
-     style="border-radius:50%;">
-
-<h3 class="mt-2">
-IUHEG
-</h3>
-
-<p>
-Plateforme universitaire
-</p>
-
+    <div class="text-center mt-3">
+        <a href="/gestion/" class="btn btn-primary me-2">Accéder au Dashboard complet</a>
+        <a href="/gestion/deliberations/" class="btn btn-success">Gérer les délibérations</a>
+    </div>
 </div>
-
-<div class="card shadow p-4">
-
-
-<h2>
-👥 {{ jury.nom }}
-</h2>
-
-<hr>
-
-
-<h4>
-Délibérations
-</h4>
-
-
-<table class="table table-bordered">
-
-<tr>
-
-<th>Étudiant</th>
-<th>Moyenne</th>
-<th>Décision</th>
-<th>Année académique</th>
-<th>Date</th>
-<th>Action</th>
-
-</tr>
-
-
-{% for d in deliberations %}
-
-<tr>
-
-<td>
-{{ d.etudiant }}
-</td>
-
-
-<td>
-{{ d.moyenne_generale }}
-</td>
-
-
-<td>
-{{ d.decision }}
-</td>
-
-
-<td>
-{{ d.annee_academique }}
-</td>
-
-
-<td>
-{{ d.date_deliberation|date:"d/m/Y" }}
-</td>
-
-
-<td>
-
-{% if d.validee %}
-
-<span class="badge bg-success">
-Validée ✅
-</span>
-
-{% else %}
-
-<a href="{% url 'valider_deliberation' d.id %}"
-class="btn btn-success">
-✅ Valider
-</a>
-
-{% endif %}
-
-</td>
-
-</tr>
-
-
-{% empty %}
-
-<tr>
-<td colspan="6" class="text-center">
-Aucune délibération disponible.
-</td>
-</tr>
-
-{% endfor %}
-
-
-</table>
-
-</div>
-
-
-</div>
-
-
 </body>
-
 </html>
